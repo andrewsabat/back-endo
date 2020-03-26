@@ -1,0 +1,58 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chat</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <style>
+        body{
+            width: 50vw;
+            display: flex;
+            flex-direction: column;
+            margin: 1rem 1rem;
+            padding: 0;
+        }
+
+        #messageForm{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 20vh;
+        }
+    </style>
+</head>
+<body>
+<div class="chat" id="chat">
+    <form id="messageForm">
+        <div>Enter Message</div>
+        <textarea class="form-control" id="message"></textarea>
+        <input type="submit" value="Send Message">
+    </form>
+</div>
+<script>
+    $(() => {
+        let socket = io.connect();
+        let $messageForm = $('#messageForm');
+        let $message = $('#message');
+        let $chat = $('#chat');
+
+        $messageForm.submit((e) => {
+            e.preventDefault();
+            socket.emit('send message', $message.val());
+            $message.val('');
+        });
+
+        socket.on('new message', (data) => {
+            console.log(data.user);
+            $chat.append('<div class="user_message"><strong>'+data.user+': </strong>'+data.msg+'</div>');
+        });
+    });
+</script>
+</body>
+</html>
